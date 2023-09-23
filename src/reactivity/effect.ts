@@ -6,7 +6,7 @@ class ReactiveEffect {
   }
   run() {
     activeEffect = this;
-    this._fn();
+    return this._fn();
   }
 }
 
@@ -42,5 +42,10 @@ export function effect(fn: Function) {
   // 抽象出一个类
   const _effect = new ReactiveEffect(fn);
 
-  _effect.run();
+  // 修改函数this问题
+  const run = _effect.run.bind(_effect);
+
+  run();
+
+  return run;
 }
