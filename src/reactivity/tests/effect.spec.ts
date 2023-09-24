@@ -1,4 +1,4 @@
-import { expect, describe, it } from 'vitest';
+import { expect, describe, it, vi } from 'vitest';
 import { reactive } from '../reactive';
 import { effect } from '../effect';
 
@@ -34,5 +34,41 @@ describe('effect', () => {
     const r = runner();
     expect(foo).toBe(12);
     expect(r).toBe(returnRunner);
+  });
+
+  it('scheduler', () => {
+    // 1. 通过 effect 第二个参数，给定一个 scheduler的 fn
+    // 2. effect第一次执行的时候，还会执行第一个参数的fn
+    // 3. 当响应式对象 set update 的时候，不执行第一个参数的fn，而是执行scheduler
+    // 4. 执行 effect 返回值 runner 的时候，会再次执行第一个参数的fn
+    let dummy;
+    let run: any;
+
+    const scheduler = vi.fn(() => {
+      run = runner;
+    });
+    const obj = reactive({ foo: 1 });
+
+    const runner = effect(
+      () => {
+        dummy = obj.foo;
+      },
+      {
+        scheduler
+      }
+    );
+    // 刚开始执行fn，不执行scheduler
+    expect(scheduler).not.toHaveBeenCalled();
+    expect(dummy).toBe(1);
+
+    // should be called on first trigger
+    obj.foo++;
+    expect(scheduler).toHaveBeenCalledTimes(1);
+    // should not run yet
+    expect(dummy).toBe(1);
+
+    run();
+    // should have run
+    expect(dummy).toBe(2);
   });
 });

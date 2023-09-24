@@ -1,7 +1,11 @@
+interface EffectOptions {
+  scheduler?: Function;
+}
+
 class ReactiveEffect {
   private _fn: any;
 
-  constructor(fn: Function) {
+  constructor(fn: Function, public scheduler?: Function) {
     this._fn = fn;
   }
   run() {
@@ -33,14 +37,18 @@ export function trigger(target: any, key: any) {
   const dep = depsMap.get(key);
 
   for (const effect of dep) {
-    effect.run();
+    if (effect.scheduler) {
+      effect.scheduler();
+    } else {
+      effect.run();
+    }
   }
 }
 
 let activeEffect: any = undefined;
-export function effect(fn: Function) {
+export function effect(fn: Function, options: EffectOptions = {}) {
   // 抽象出一个类
-  const _effect = new ReactiveEffect(fn);
+  const _effect = new ReactiveEffect(fn, options.scheduler);
 
   // 修改函数this问题
   const run = _effect.run.bind(_effect);
