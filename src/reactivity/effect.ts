@@ -4,6 +4,10 @@ interface EffectOptions {
   scheduler?: Function;
   onStop?: Function;
 }
+let activeEffect: any = undefined;
+let shouldTrack: boolean = true;
+
+const targetMap = new WeakMap();
 
 class ReactiveEffect {
   private _fn: any;
@@ -14,8 +18,18 @@ class ReactiveEffect {
     this._fn = fn;
   }
   run() {
+    // shouldTrack 来做区分
+    if (!this.active) {
+      return this._fn();
+    }
+
+    shouldTrack = true;
     activeEffect = this;
-    return this._fn();
+    const res = this._fn();
+    // reset
+    shouldTrack = false;
+
+    return res;
   }
   stop() {
     if (this.active) {
@@ -30,12 +44,13 @@ function cleanupEffect(effect: any) {
   effect.deps.forEach((dep: any) => {
     dep.delete(effect);
   });
+  effect.deps.length = 0;
 }
-
-const targetMap = new WeakMap();
 
 // 依赖收集 target -> key -> dep
 export function track(target: any, key: any) {
+  if (!isTracking()) return;
+
   let depsMap = targetMap.get(target);
   if (!depsMap) {
     depsMap = new Map();
@@ -46,10 +61,15 @@ export function track(target: any, key: any) {
     dep = new Set();
     depsMap.set(key, dep);
   }
-  if (!activeEffect) return;
+
+  if (dep.has(activeEffect)) return;
 
   dep.add(activeEffect);
   activeEffect.deps.push(dep);
+}
+
+function isTracking() {
+  return activeEffect !== undefined && shouldTrack;
 }
 
 // 派发更新（ 触发依赖 ）target -> key -> dep -> effect
@@ -66,7 +86,6 @@ export function trigger(target: any, key: any) {
   }
 }
 
-let activeEffect: any = undefined;
 export function effect(fn: Function, options: EffectOptions = {}) {
   // 抽象出一个类
   const _effect = new ReactiveEffect(fn, options.scheduler);

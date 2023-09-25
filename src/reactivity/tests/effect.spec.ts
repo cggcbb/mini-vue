@@ -86,9 +86,13 @@ describe('effect', () => {
 
     obj.foo = 3;
     expect(dummy).toBe(2);
+    // obj.foo = obj.foo + 1
+    // get set
+    obj.foo++;
+    expect(dummy).toBe(2);
 
     runner();
-    expect(dummy).toBe(3);
+    expect(dummy).toBe(4);
   });
 
   it('onStop', () => {
