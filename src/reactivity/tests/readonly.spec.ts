@@ -25,6 +25,6 @@ describe('readonly', () => {
 
     obj.foo = 2;
 
-    expect(console.warn).toBeCalled();
+    expect(console.warn).toHaveBeenCalled();
   });
 });

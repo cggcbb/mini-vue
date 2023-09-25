@@ -9,12 +9,13 @@
 ## Reactivity 模块
 
 - [x] effect (happy path)
-- [x] 支持 effect runner
-- [x] 支持 effect scheduler
-- [x] 支持 effect stop
-- [x] reactive 的实现
+- [x] effect runner
+- [x] effect scheduler
+- [x] effect stop
+- [x] reactive (nested)
 - [x] track 依赖收集
 - [x] trigger 触发依赖
-- [x] readonly 的实现
-- [x] 支持 isReactive
-- [x] 支持 isReadonly
+- [x] readonly (nested)
+- [x] shallowReadonly
+- [x] isReactive
+- [x] isReadonly
