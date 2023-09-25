@@ -19,3 +19,4 @@
 - [x] shallowReadonly
 - [x] isReactive
 - [x] isReadonly
+- [x] isProxy
