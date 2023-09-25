@@ -12,6 +12,9 @@ describe('readonly', () => {
 
     expect(isReadonly(original)).toBe(false);
     expect(isReadonly(wrapped)).toBe(true);
+
+    expect(isReadonly(wrapped.bar)).toBe(true);
+    expect(isReadonly(original.bar)).toBe(false);
   });
 
   it('warning when readonly call setter', () => {
