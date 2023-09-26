@@ -20,3 +20,4 @@
 - [x] isReactive
 - [x] isReadonly
 - [x] isProxy
+- [x] ref
