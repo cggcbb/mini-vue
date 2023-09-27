@@ -9,7 +9,7 @@ let shouldTrack: boolean = true;
 
 const targetMap = new WeakMap();
 
-class ReactiveEffect {
+export class ReactiveEffect {
   private _fn: any;
   deps = [];
   active = true;
