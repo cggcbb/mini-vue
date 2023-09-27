@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { isRef, ref, unRef } from '../ref';
+import { isRef, proxyRefs, ref, unRef } from '../ref';
 import { effect } from '../effect';
-import { reactive } from '../reactive';
+import { isProxy, reactive } from '../reactive';
 
 describe('ref', () => {
   it('happy path', () => {
@@ -59,5 +59,26 @@ describe('ref', () => {
     const num = ref(1);
     expect(unRef(num)).toBe(1);
     expect(unRef(1)).toBe(1);
+  });
+
+  it('proxyRefs', () => {
+    const user = {
+      age: ref(18),
+      name: 'anx'
+    };
+
+    const proxyUser: any = proxyRefs(user);
+    expect(user.age.value).toBe(18);
+    expect(proxyUser.age).toBe(18);
+    expect(proxyUser.name).toBe('anx');
+
+    proxyUser.age = 20;
+    expect(user.age.value).toBe(20);
+    expect(proxyUser.age).toBe(20);
+    expect(proxyUser.name).toBe('anx');
+
+    proxyUser.age = ref(22);
+    expect(proxyUser.age).toBe(22);
+    expect(user.age.value).toBe(22);
   });
 });
