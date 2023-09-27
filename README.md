@@ -21,3 +21,7 @@
 - [x] isReadonly
 - [x] isProxy
 - [x] ref
+- [x] isRef
+- [x] unRef
+- [x] proxyRefs
+- [x] computed
